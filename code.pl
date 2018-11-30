@@ -77,6 +77,11 @@ validate_vid(X, E) :-
     atom_number(E, EN),
     X=EN.
 
+validate_vid(X, E) :-
+    X=E,
+    E='null'.
+
+
 validate_proto(X, E) :-
     %allow(_, [_|[E|_]], _),
     split_string(E, "-", "", T),
@@ -98,6 +103,9 @@ validate_proto(X, E) :-
     atom_number(E, EN),
     X=EN.
 
+validate_proto(X, E) :-
+    X=E,
+    E='null'.
 
 
 
