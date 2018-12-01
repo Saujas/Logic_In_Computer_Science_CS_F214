@@ -1,3 +1,4 @@
+:- consult(db).
 
 packet(X, Y, Z) :-
     allow(A, B, C),
@@ -15,18 +16,79 @@ testIP([A, B], [E, F]) :-
     B=F.
 
 testIP([A, B], [E, F]) :-
-    either(E, A),
+    mask(E, A),
     B=F.
 
-either(X, B) :-
-    split_string(X, ".", "", L),
-    split_string(B, ".", "", M), 
-    lastEl(S, L), 
-    lastEl(T, M),
-    split_string(S, "/", "", U), 
-    member(R, U), 
-    R=T. 
+testIP([A, B], [E, F]) :-
+    rangeIP(F, B),  
+    A=E.
 
+testIP([A, B], [E, F]) :-
+    mask(F, B),
+    A=E.
+
+testIP([A, B], [E, F]) :-
+    rangeIP(E, A),
+    rangeIP(F, B).
+
+testIP([A, B], [E, F]) :-
+    rangeIP(E, A), 
+    mask(F, B).
+
+testIP([A, B], [E, F]) :-
+    mask(E, A),
+    mask(F, B).
+
+testIP([A, B], [E, F]) :-
+    mask(E, A),
+    rangeIP(F, B).
+
+testIP([A, B], [E, F]) :-
+    A=E,
+    commaIP(F, B).
+
+testIP([A, B], [E, F]) :-
+    rangeIP(E, A), 
+    commaIP(F, B).
+
+testIP([A, B], [E, F]) :-
+    mask(E, A),
+    commaIP(F, B).
+
+testIP([A, B], [E, F]) :-
+    B=F,
+    commaIP(E, A).
+
+testIP([A, B], [E, F]) :-
+    rangeIP(F, B),
+    commaIP(E, A).
+
+testIP([A, B], [E, F]) :-
+    mask(F, B),
+    commaIP(E, A).
+
+testIP([A, B], [E, F]) :-
+    commaIP(E, A),
+    commaIP(F, B).
+
+commaIP(X, A) :-
+    split_string(X, ",", "", L),
+    member(C, L),
+    atom_string(A, C).
+
+
+mask(X, B) :-
+    split_string(B, "/", "", L),
+    X=B,
+    lastEl(C, L), 
+    C=<32,
+    C>=1.
+
+
+check([L1, L2, L3 | _], [M1, M2, M3 | _]) :-
+    L1=M1,
+    L2=M2, 
+    L3=M3.
 
 rangeIP(X, I) :-
     split_string(X, "-", "", L), 
@@ -39,14 +101,17 @@ splitNo([A, B], I) :-
     lastEl(Q, L),
     lastEl(R, M),
     lastEl(S, N), 
-    memberofNumberAsString(Q, R, S).  
+    memberofNumberAsString(Q, R, S, L, M).  
 
 lastEl(X,[X]).
 
 lastEl(X,[_|Z]) :- 
     lastEl(X,Z).
 
-memberofNumberAsString(Q, R, S) :-
+memberofNumberAsString(Q, R, S, [L1, L2, L3 | _], [M1, M2, M3 | _]) :-
+    L1=M1,
+    L2=M2,
+    L3=M3,
     number_codes(X, Q), 
     number_codes(Y, R), 
     number_codes(Z, S), 
@@ -56,6 +121,7 @@ memberofNumberAsString(Q, R, S) :-
 
 
 validate_adapter(X, L) :-
+    \+X='any',
     %allow(L, _, _),
     split_string(L, "-", "", T),
     length(T, I),
@@ -63,6 +129,7 @@ validate_adapter(X, L) :-
     memberOfRange(X,T).
     
 validate_adapter(X, L) :-
+    \+X='any',
     %allow(L, _, _),
     split_string(L, ",", "", T),
     length(T, I),
@@ -70,12 +137,17 @@ validate_adapter(X, L) :-
     memberOfList(X, T).
 
 validate_adapter(X, P) :-
+    \+X='any',
     %allow(P, _, _),
     string_length(P, I),
     I=1,
     char_code(X, XC),
     char_code(P, PC),
     XC=PC.
+
+validate_adapter(X, A) :-
+    X=A,
+    A='any'.
 
 validate_ethernet([V|[P|_]], [X, Y]) :-
     validate_vid(V, X),
