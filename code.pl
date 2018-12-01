@@ -14,6 +14,20 @@ testIP([A, B], [E, F]) :-
     rangeIP(E, A),  
     B=F.
 
+testIP([A, B], [E, F]) :-
+    either(E, A),
+    B=F.
+
+either(X, B) :-
+    split_string(X, ".", "", L),
+    split_string(B, ".", "", M), 
+    lastEl(S, L), 
+    lastEl(T, M),
+    split_string(S, "/", "", U), 
+    member(R, U), 
+    R=T. 
+
+
 rangeIP(X, I) :-
     split_string(X, "-", "", L), 
     splitNo(L, I).
