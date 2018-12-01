@@ -1,27 +1,30 @@
 :- consult(db).
 
-packet(X, Y, Z, W) :-
-    allow(A, B, C, D),
+packet(X, Y, Z, W, T) :-
+    allow(A, B, C, D, E),
     testAdapter(X, A), 
     testEthernet(Y, B),
     testIP(Z, C),
     testICMP(W, D),
+    testTcpUdp(T, E),
     write("Packet accepted!").
 
-packet(X, Y, Z, W) :-
-    reject(A, B, C, D),
+packet(X, Y, Z, W, T) :-
+    reject(A, B, C, D, E),
     testAdapter(X, A), 
     testEthernet(Y, B),
     testIP(Z, C),
     testICMP(W, D),
+    testTcpUdp(T, E),
     write("Packet rejected!"), false.
 
-packet(X, Y, Z, W) :-
-    drop(A, B, C, D),
+packet(X, Y, Z, W, T) :-
+    drop(A, B, C, D, E),
     testAdapter(X, A), 
     testEthernet(Y, B),
     testIP(Z, C),
     testICMP(W, D),
+    testTcpUdp(T, E),
     false.
 
 testAdapter(X, L) :-
@@ -57,6 +60,48 @@ testEthernet([V|[P|_]], [X, Y]) :-
 testICMP([V|[P|_]], [X, Y]) :-
     testVid(V, X),
     testProto(P, Y).
+
+testTcpUdp([X, Y, Z], [A, B, C]) :-
+    testSrcDst(X, A),
+    testSrcDst(Y, B),
+    testName(Z, C).
+
+testName(A, B) :-
+    A=B,
+    B='udp'.
+
+testName(A, B) :-
+    A=B,
+    B='tdp'.
+
+testSrcDst(X, E) :-
+    split_string(E, "-", "", T),
+    length(T, I),
+    I=2,
+    memberOfNumberRange(X,T),
+    X=<65535,
+    X>=0.
+
+testSrcDst(X, E) :-
+    split_string(E, ",", "", T),
+    length(T, I),
+    I >= 2,
+    memberOfNumberList(X, T),
+    X=<65535,
+    X>=0.
+
+
+testSrcDst(X, E) :-
+    string_to_list(E, S),
+    checkValidNumber(S),
+    atom_number(E, EN),
+    X=EN,
+    X=<65535,
+    X>=0.
+
+testSrcDst(X, E) :-
+    X=E,
+    E='null'.
 
 testVid(X, E) :-
     split_string(E, "-", "", T),
@@ -151,7 +196,9 @@ mask(X, B) :-
     X=B,
     \+B='null',
     split_string(B, "/", "", L),
-    lastEl(C, L), 
+    lastEl(C, L),
+    length(L, I),
+    I=2,
     C=<32,
     C>=1.
 
