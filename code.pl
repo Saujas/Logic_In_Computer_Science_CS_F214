@@ -87,7 +87,10 @@ testProto(X, E) :-
 testIP([A|[B|C]], [E|[F|G]]) :-
     srcIP(A, E),
     dstIP(B, F),
-    C=G.
+    protoIP(C, G).
+
+protoIP(C, G) :-
+    C=G. 
 
 
 srcIP(A, E) :-
@@ -105,6 +108,7 @@ srcIP(A, E) :-
 
 dstIP(B, F) :-
     B=F.
+
 
 dstIP(B, F) :-
     rangeIP(F, B).
@@ -124,6 +128,7 @@ commaIP(X, A) :-
 
 mask(X, B) :-
     X=B,
+    \+B='null',
     split_string(B, "/", "", L),
     lastEl(C, L), 
     C=<32,
