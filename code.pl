@@ -1,11 +1,28 @@
 :- consult(db).
 
-packet(X, Y, Z) :-
-    allow(A, B, C),
+packet(X, Y, Z, W) :-
+    allow(A, B, C, D),
     testAdapter(X, A), 
     testEthernet(Y, B),
-    testIP(Z, C).
+    testIP(Z, C),
+    testICMP(W, D),
+    write("Packet accepted!").
 
+packet(X, Y, Z, W) :-
+    reject(A, B, C, D),
+    testAdapter(X, A), 
+    testEthernet(Y, B),
+    testIP(Z, C),
+    testICMP(W, D),
+    write("Packet rejected!"), false.
+
+packet(X, Y, Z, W) :-
+    drop(A, B, C, D),
+    testAdapter(X, A), 
+    testEthernet(Y, B),
+    testIP(Z, C),
+    testICMP(W, D),
+    false.
 
 testAdapter(X, L) :-
     \+X='any',
@@ -34,6 +51,10 @@ testAdapter(X, A) :-
     A='any'.
 
 testEthernet([V|[P|_]], [X, Y]) :-
+    testVid(V, X),
+    testProto(P, Y).
+
+testICMP([V|[P|_]], [X, Y]) :-
     testVid(V, X),
     testProto(P, Y).
 
