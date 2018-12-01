@@ -1,6 +1,5 @@
 
 packet(X, Y, Z) :-
-    %split_adapter(X),
     allow(A, B, C),
     validate_adapter(X, A), 
     validate_ethernet(Y, B),
@@ -11,24 +10,36 @@ testIP([A|[B|_]], [E|[F|_]]) :-
     A=E,
     B=F.
 
-% split_adapter(X) :-
-%     split_string(X, " ", "", L),
-%     length(L, I), 
-%     I=2,
-%     write(L),
-%     adapterListSplit(K, L),
-%     write(K).
+testIP([A, B], [E, F]) :-
+    rangeIP(E, A),  
+    B=F.
 
-% adapterListSplit(_, []) :-
-%     false.
+rangeIP(X, I) :-
+    split_string(X, "-", "", L), 
+    splitNo(L, I).
 
-% adapterListSplit(K, [H|T]) :-
-%     string_length(H, I),
-%     I=1,
-%     char_code(H, HC),
-%     char_code(K, KC),
-%     HC = KC;
-%     adapterListSplit(K, T).
+splitNo([A, B], I) :-
+    split_string(A, ".", "", L),
+    split_string(B, ".", "", M),
+    split_string(I, ".", "", N), 
+    lastEl(Q, L),
+    lastEl(R, M),
+    lastEl(S, N), 
+    memberofNumberAsString(Q, R, S).  
+
+lastEl(X,[X]).
+
+lastEl(X,[_|Z]) :- 
+    lastEl(X,Z).
+
+memberofNumberAsString(Q, R, S) :-
+    number_codes(X, Q), 
+    number_codes(Y, R), 
+    number_codes(Z, S), 
+    Z>=X, 
+    Z=<Y.
+
+
 
 validate_adapter(X, L) :-
     %allow(L, _, _),
