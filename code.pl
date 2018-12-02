@@ -151,9 +151,9 @@ testName(A, B) :-
     A=B,
     B='tcp'.
 
-%Tests the source and destination addresses of TCP/UDP when any (or both) of them match(es) a 'hyphen' separated rule in the database.
+%Tests the source and destination ports of TCP/UDP when any (or both) of them match(es) a 'hyphen' separated rule in the database.
 %Tests if the input is in the correct range as per the Internet Assigned Numbers Authority.
-%Examples - 192.168.1.1-15
+%Examples - 4000-5000
 testSrcDst(X, E) :-
     split_string(E, "-", "", T),
     length(T, I),
@@ -162,9 +162,9 @@ testSrcDst(X, E) :-
     X=<65535,
     X>=0.
 
-%Tests the source and destination addresses of TCP/UDP when any (or both) of them match(es) a 'comma' separated rule in the database.
+%Tests the source and destination ports of TCP/UDP when any (or both) of them match(es) a 'comma' separated rule in the database.
 %Tests if the input is in the correct range as per the Internet Assigned Numbers Authority.
-%Examples - 192.168.1.1,192.168.1.15
+%Examples - 4000,4001
 testSrcDst(X, E) :-
     split_string(E, ",", "", T),
     length(T, I),
@@ -173,7 +173,7 @@ testSrcDst(X, E) :-
     X=<65535,
     X>=0.
 
-%Tests the source and destination addresses of TCP/UDP when any (or both) of them match(es) a simple rule - without 'hyphen'/'comma' in the database.
+%Tests the source and destination ports of TCP/UDP when any (or both) of them match(es) a simple rule - without 'hyphen'/'comma' in the database.
 %Tests if the input is in the correct range as per the Internet Assigned Numbers Authority.
 testSrcDst(X, E) :-
     string_to_list(E, S),
